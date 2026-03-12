@@ -120,6 +120,16 @@ export const resolveDynamicFieldSection = (field: DynamicFormField): string => {
   return typeof section === 'string' && section !== '' ? section : 'general';
 };
 
+const resolveDynamicFieldTooltip = (field: DynamicFormField): string | undefined => {
+  const metaTooltip = field.meta?.tooltip;
+  if (typeof metaTooltip === 'string' && metaTooltip.trim() !== '') {
+    return metaTooltip.trim();
+  }
+
+  const description = typeof field.description === 'string' ? field.description.trim() : '';
+  return description !== '' ? description : undefined;
+};
+
 const normalizeCondition = (condition: DynamicFormFieldCondition): NormalizedCondition[] => {
   const fieldName = condition.field;
   if (typeof fieldName === 'string' && fieldName !== '') {
@@ -274,10 +284,9 @@ export default function DynamicFormFields({
     const fieldType = resolveDynamicFieldType(field);
     const required = isDynamicFieldRequired(field, data);
     const label = field.label ?? field.key;
-    const description = field.description ?? '';
     const error = normalizeFieldError(errors[field.key]);
     const hasError = error !== '';
-    const tooltip = typeof field.meta?.tooltip === 'string' ? field.meta.tooltip : undefined;
+    const tooltip = resolveDynamicFieldTooltip(field);
 
     if (fieldType === 'hidden') {
       return <input key={field.key} type="hidden" name={field.key} value={String(data[field.key] ?? '')} />;
@@ -296,7 +305,7 @@ export default function DynamicFormFields({
       return (
         <div key={field.key} className={fieldClassName}>
           <Input>
-            <Input.Label required={required}>{label}</Input.Label>
+            <Input.Label required={required} hint={tooltip} hintPlacement="auto">{label}</Input.Label>
             <Input.Field
               name={field.key}
               type="file"
@@ -320,7 +329,6 @@ export default function DynamicFormFields({
             <Text className={descriptionClassName}>Выбрано файлов: {selectedFiles.length}</Text>
           ) : null}
           {currentPath !== '' ? <Text className={descriptionClassName}>Текущий файл: {currentPath}</Text> : null}
-          {description !== '' ? <Text className={descriptionClassName}>{description}</Text> : null}
         </div>
       );
     }
@@ -334,6 +342,8 @@ export default function DynamicFormFields({
             <Input.Checkbox
               name={field.key}
               label={label}
+              hint={tooltip}
+              hintPlacement="auto"
               checked={Boolean(data[field.key])}
               onChange={(event) => onChange(field.key, event.target.checked)}
             />
@@ -347,7 +357,6 @@ export default function DynamicFormFields({
               onChange={(event) => onChange(field.key, event.target.checked)}
             />
           )}
-          {description !== '' ? <Text className={descriptionClassName}>{description}</Text> : null}
           {hasError ? <Input.ErrorBag>{error}</Input.ErrorBag> : null}
         </div>
       );
@@ -374,7 +383,6 @@ export default function DynamicFormFields({
               </Input.FloatLabel>
               {hasError ? <Input.ErrorTooltip target="input" content={error} placement="auto" /> : null}
             </Input>
-            {description !== '' ? <Text className={descriptionClassName}>{description}</Text> : null}
           </div>
         );
       }
@@ -398,7 +406,6 @@ export default function DynamicFormFields({
             </Input.FloatLabel>
             {hasError ? <Input.ErrorTooltip target="input" content={error} placement="auto" /> : null}
           </Input>
-          {description !== '' ? <Text className={descriptionClassName}>{description}</Text> : null}
         </div>
       );
     }
@@ -415,12 +422,13 @@ export default function DynamicFormFields({
                 key={`${field.key}-${option.value}`}
                 name={field.key}
                 label={option.label}
+                hint={tooltip}
+                hintPlacement="auto"
                 checked={data[field.key] === option.value}
                 onChange={() => onChange(field.key, option.value)}
               />
             ))}
           </Stack>
-          {description !== '' ? <Text className={descriptionClassName}>{description}</Text> : null}
           {hasError ? <Input.ErrorBag>{error}</Input.ErrorBag> : null}
         </div>
       );
@@ -439,7 +447,6 @@ export default function DynamicFormFields({
             </Input.FloatLabel>
             {hasError ? <Input.ErrorTooltip target="input" content={error} placement="auto" /> : null}
           </Input>
-          {description !== '' ? <Text className={descriptionClassName}>{description}</Text> : null}
         </div>
       );
     }
@@ -453,10 +460,9 @@ export default function DynamicFormFields({
 
       return (
         <div key={field.key} className={fieldClassName}>
-          <Text className={labelClassName}>
-            {label}
-            {required ? ' *' : ''}
-          </Text>
+          <Input>
+            <Input.Label required={required} hint={tooltip} hintPlacement="auto">{label}</Input.Label>
+          </Input>
           <MarkdownEditor
             value={value}
             onChange={(nextValue) => onChange(field.key, nextValue)}
@@ -468,7 +474,7 @@ export default function DynamicFormFields({
                 {
                   id: `${field.key}-editor`,
                   label: 'Редактор',
-                  content: <MarkdownEditor.Textarea label="Редактор" />,
+                  content: <MarkdownEditor.Textarea label="Редактор" id={`${field.key}-markdown`} name={field.key} />,
                 },
                 {
                   id: `${field.key}-preview`,
@@ -479,7 +485,6 @@ export default function DynamicFormFields({
               defaultActiveId={`${field.key}-editor`}
             />
           </MarkdownEditor>
-          {description !== '' ? <Text className={descriptionClassName}>{description}</Text> : null}
           {hasError ? <Input.ErrorBag>{error}</Input.ErrorBag> : null}
         </div>
       );
@@ -515,7 +520,6 @@ export default function DynamicFormFields({
           </Input.FloatLabel>
           {hasError ? <Input.ErrorTooltip target="input" content={error} placement="auto" /> : null}
         </Input>
-        {description !== '' ? <Text className={descriptionClassName}>{description}</Text> : null}
       </div>
     );
   };
