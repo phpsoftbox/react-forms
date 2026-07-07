@@ -1,6 +1,6 @@
 {
   "name": "@phpsoftbox/forms",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.js",
@@ -19,7 +19,7 @@
   "peerDependencies": {
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "@phpsoftbox/react-softbox": "^1.0.0"
+    "@phpsoftbox/react-softbox": "^2"
   },
   "scripts": {
     "clean": "rm -rf dist",
@@ -27,7 +27,7 @@
     "prepublishOnly": "yarn clean && yarn build"
   },
   "devDependencies": {
-    "@phpsoftbox/react-softbox": "^1.0.0",
+    "@phpsoftbox/react-softbox": "^2",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "react": "^19.2.4",

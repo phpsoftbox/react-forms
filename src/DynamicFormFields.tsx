@@ -1,5 +1,6 @@
 import React from 'react';
-import { Input, MarkdownEditor, Stack, Tabs, Text } from '@phpsoftbox/react-softbox';
+import { Input, Stack, Tabs, Text } from '@phpsoftbox/react-softbox';
+import { MarkdownEditor } from '@phpsoftbox/react-softbox/markdown';
 
 export type DynamicFormFieldOption = {
   label: string;
